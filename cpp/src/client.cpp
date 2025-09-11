@@ -28,7 +28,7 @@ void runClient(std::string hostName, int PORT, float time) {
         exit(1);
     }
     memcpy(&addr.sin_addr, host->h_addr, host->h_length);
-    addr.sin_port = htons(8080);  // server port
+    addr.sin_port = htons(PORT);  // server port
 
     // Connect to the server
     if (connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)) == -1) {
