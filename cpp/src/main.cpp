@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
             }
         }
     }
-
+    spdlog::info(is_server ? "Running in server mode" : "Running in client mode");
     if (is_server) {
         runServer(port);
     }
