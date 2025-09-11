@@ -43,9 +43,9 @@ int main(int argc, char* argv[]) {
 
     /* Port */
     if (result.count("port") == 1) {
-        auto port = result["port"].as<int>();
+        port = result["port"].as<int>();
     }
-    if (result.count("port") != 1) {
+    else if (result.count("port") != 1) {
         spdlog::error("Error: you must specify a port number with -p");
         exit(1);
     }
