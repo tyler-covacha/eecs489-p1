@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
     }
     spdlog::debug("About to check port number...");
     if (port < 1024 || port > 0xFFFF) {
-        spdlog::debug("Port number is: {}", port);
+      spdlog::error("Port number is: {}", port);
       spdlog::error("Error: port number must be in the range of [1024, 65535]"); 
       exit(1); 
     }
