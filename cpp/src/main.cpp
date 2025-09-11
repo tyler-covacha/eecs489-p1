@@ -31,10 +31,10 @@ int main(int argc, char* argv[]) {
 
     /* Server or Client */
     if (result.count("server") == 1) { 
-        auto is_server = result["server"].as<bool>();
+        is_server = result["server"].as<bool>();
     }
     else if (result.count("client") == 1) {
-        auto is_client = result["client"].as<bool>();
+        is_client = result["client"].as<bool>();
     }
     else {
         spdlog::error("Error: you must specify either only one server (-s) or client (-c) mode");
