@@ -64,8 +64,8 @@ if __name__ == '__main__':
 
     # Run network
     net.start()
-    h1 = net.get('h1')
+    # h1 = net.get('h1')
     # h1.cmd('ping -c 5 10.0.0.2 > latency.txt')
-    # CLI( net )
+    CLI( net )
     net.stop()
 

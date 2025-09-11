@@ -73,7 +73,7 @@ void runServer(int PORT) {
             end = std::chrono::high_resolution_clock::now();
             if (i >= 1) {
                 rtt[i-1] = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-                printf("RTT %d: %ld microseconds\n", i+1, rtt[i-1].count());
+                printf("RTT %d: %ld microseconds\n", i, rtt[i-1].count());
             }
             start = std::chrono::high_resolution_clock::now();
             printf("message: %s\n", buf);
