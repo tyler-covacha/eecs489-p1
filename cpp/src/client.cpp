@@ -54,6 +54,20 @@ void runClient(std::string hostName, int PORT, float time) {
 
     }
 
+    //send one message
+    char message[] = "T";
+    if (send(sockfd, message, sizeof(message), 0) == -1) {
+        perror("send");
+        exit(1);
+    }
+    char buf[1024];
+    int ret {};
+    if ((ret = recv(sockfd, buf, sizeof(buf), 0)) == -1) {
+        perror("recv");
+        exit(1);
+    }
+
+
     close(sockfd);
     shutdown(sockfd, SHUT_RDWR);
 }

@@ -9,6 +9,7 @@
 #include <spdlog/spdlog.h>
 
 // #define PORT 8080
+#define MAX_LIST_SIZE 65536
 
 void runServer(int PORT) {
     // Make a socket
@@ -56,8 +57,11 @@ void runServer(int PORT) {
         char s[INET6_ADDRSTRLEN];
         printf("connetion from %s\n", inet_ntoa(connection.sin_addr));
         
+        // Variable setup
         std::chrono::high_resolution_clock::time_point start, end;
-        std::chrono::microseconds rtt[7]; 
+        std::chrono::milliseconds rtt[7]; 
+        int64_t rtt_last_four_sum = 0;
+
         /* Eight 'M' and 'A' messages */
         for (int i = 0; i < 8; i++) {
             // Receive message
@@ -72,8 +76,12 @@ void runServer(int PORT) {
 
             end = std::chrono::high_resolution_clock::now();
             if (i >= 1) {
-                rtt[i-1] = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-                printf("RTT %d: %ld microseconds\n", i, rtt[i-1].count());
+                rtt[i-1] = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+                int64_t rtt_num = rtt[i-1].count();
+                if (i >= 4) {
+                    rtt_last_four_sum += rtt_num;
+                }
+                printf("RTT %d: %ld milliseconds\n", i, rtt_num);
             }
             start = std::chrono::high_resolution_clock::now();
             printf("message: %s\n", buf);
@@ -87,6 +95,43 @@ void runServer(int PORT) {
             }
         }
 
+        // Store Average RTT
+        int average_rtt = rtt_last_four_sum / 4;
+
+        // 80 KB chunks received and ACK sent
+
+        int KB_received = 0;
+        int counter = 0;
+        while (true) {
+            char buf[81920];
+            int ret {};
+            if ((ret = recv(connectionfd, buf, sizeof(buf), 0)) == -1) {
+                perror("recv");
+                close(connectionfd);
+                break;
+            }
+            if (ret == 0) { // Connection closed by client
+                break;
+            }
+            KB_received += ret / 1024;
+            buf[ret] = '\0';
+
+            // Send ACK message back to client
+            char ack[] = "A";
+            if (send(connectionfd, ack, sizeof(ack), 0) == -1) {
+                perror("send");
+                close(connectionfd);
+                break;
+            }
+        }
+        //Bandwidth calculation
+        end = std::chrono::high_resolution_clock::now();
+        auto total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+        float total_time_sec = (total_time.count() - average_rtt) / 1000.0;
+        int Kb_received = KB_received * 8;
+        float bandwidth = Kb_received / total_time_sec;
+
+         spdlog::info("Received={} KB, Rate={:.3f} Mbps, Average RTT:{} ms\n", KB_received, bandwidth, average_rtt);
 
         close(connectionfd);
     }
