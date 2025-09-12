@@ -76,6 +76,7 @@ void runServer(int PORT) {
 
             end = std::chrono::high_resolution_clock::now();
             if (i >= 1) {
+                spdlog::info("Start {}, End {}", std::chrono::duration_cast<std::chrono::milliseconds>(start.time_since_epoch()).count(), std::chrono::duration_cast<std::chrono::milliseconds>(end.time_since_epoch()).count());
                 rtt[i-1] = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
                 int64_t rtt_num = rtt[i-1].count();
                 spdlog::info("rtt: {}", rtt_num);
