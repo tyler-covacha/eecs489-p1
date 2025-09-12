@@ -95,6 +95,7 @@ void runClient(std::string hostName, int PORT, float time) {
         end = std::chrono::high_resolution_clock::now();
         endTime = (std::chrono::duration_cast<std::chrono::seconds>(end.time_since_epoch())).count();
         timeElapsed = endTime - startTime;
+        spdlog::info("Time Elapsed: {:.3f} seconds", timeElapsed);
     }
 
     auto total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
