@@ -74,8 +74,8 @@ void runClient(std::string hostName, int PORT, float time) {
     // Send messages for "time" seconds
     start = std::chrono::high_resolution_clock::now();
     end = std::chrono::high_resolution_clock::now();
-    float startTime = (std::chrono::duration_cast<std::chrono::microseconds>(start.time_since_epoch())).count();
-    float endTime = (std::chrono::duration_cast<std::chrono::microseconds>(end.time_since_epoch())).count();
+    auto startTime = (std::chrono::duration_cast<std::chrono::microseconds>(start.time_since_epoch())).count();
+    auto endTime = (std::chrono::duration_cast<std::chrono::microseconds>(end.time_since_epoch())).count();
     float timeElapsed = endTime - startTime;
     int KB_sent = 0;
     int messages_sent = 0;
