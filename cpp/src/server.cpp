@@ -78,10 +78,11 @@ void runServer(int PORT) {
             if (i >= 1) {
                 rtt[i-1] = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
                 int64_t rtt_num = rtt[i-1].count();
+                spdlog::info("rtt: {}", rtt_num);
                 if (i >= 4) {
                     rtt_last_four_sum += rtt_num;
                 }
-                printf("RTT %d: %ld milliseconds\n", i, rtt_num);
+                // printf("RTT %d: %ld milliseconds\n", i, rtt_num);
             }
             start = std::chrono::high_resolution_clock::now();
             printf("message: %s\n", buf);
