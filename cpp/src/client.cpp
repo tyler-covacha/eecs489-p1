@@ -36,10 +36,15 @@ void runClient(std::string hostName, int PORT, float time) {
         exit(1);
     }
 
-    // Send a message
+    auto start = std::chrono::high_resolution_clock::now();
+    auto end = std::chrono::high_resolution_clock::now();
+    float rtt_last_four_sum = 0;
+
+    // Send 8 messages
     for (int i = 0; i < 8; i++) {
         char message[] = "M";
-        if (send(sockfd, message, sizeof(message), 0) == -1) {
+        start = std::chrono::high_resolution_clock::now();
+        if (send(sockfd, message, 1, 0) == -1) {
             perror("send");
             exit(1);
         }
@@ -50,22 +55,55 @@ void runClient(std::string hostName, int PORT, float time) {
             perror("recv");
             exit(1);
         }
-        buf[ret] = '\0';
+        end = std::chrono::high_resolution_clock::now();
 
+        // rtt
+        if (ret >= 1) {
+            float rtt_num = (std::chrono::duration_cast<std::chrono::milliseconds>(end - start)).count();
+                
+            if (i >= 4) {
+                rtt_last_four_sum += rtt_num;
+            }
+        }
     }
 
-    //send one message
-    char message[] = "T";
-    if (send(sockfd, message, sizeof(message), 0) == -1) {
-        perror("send");
-        exit(1);
+    int average_rtt = rtt_last_four_sum / 4;
+
+    // Send messages for "time" seconds
+    start = std::chrono::high_resolution_clock::now();
+    end = std::chrono::high_resolution_clock::now();
+    float startTime = (std::chrono::duration_cast<std::chrono::seconds>(start.time_since_epoch())).count();
+    float endTime = (std::chrono::duration_cast<std::chrono::seconds>(end.time_since_epoch())).count();
+    float timeElapsed = endTime - startTime;
+    int KB_sent = 0;
+    int messages_sent = 0;
+
+    char message[81920] = {'\0'};
+    while (timeElapsed < time){
+        if (send(sockfd, message, sizeof(message), 0) == -1) {
+            perror("send");
+            exit(1);
+        }
+        KB_sent += 80; // 80 KB
+        char buf[1024];
+        messages_sent++;
+        int ret {};
+        if ((ret = recv(sockfd, buf, sizeof(buf), 0)) == -1) {
+            perror("recv");
+            exit(1);
+        }
+        end = std::chrono::high_resolution_clock::now();
+        endTime = (std::chrono::duration_cast<std::chrono::seconds>(end.time_since_epoch())).count();
+        timeElapsed = endTime - startTime;
     }
-    char buf[1024];
-    int ret {};
-    if ((ret = recv(sockfd, buf, sizeof(buf), 0)) == -1) {
-        perror("recv");
-        exit(1);
-    }
+
+    auto total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    float transmission_delay = (total_time.count() - (average_rtt * messages_sent)) / 1000.0;
+    int Kb_sent = KB_sent * 8;
+    float bandwidth = Kb_sent / transmission_delay;
+
+    spdlog::info("Sent={} KB, Rate={:.3f} Mbps, Average RTT:{} ms\n", KB_sent, bandwidth, average_rtt);
+
 
 
     close(sockfd);
