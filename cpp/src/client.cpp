@@ -12,6 +12,8 @@
 
 // #define PORT 8080
 
+#define MICROSECONDS_IN_SECOND 1000000
+
 void runClient(std::string hostName, int PORT, float time) {
     // Make a socket
     int sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -72,14 +74,14 @@ void runClient(std::string hostName, int PORT, float time) {
     // Send messages for "time" seconds
     start = std::chrono::high_resolution_clock::now();
     end = std::chrono::high_resolution_clock::now();
-    float startTime = (std::chrono::duration_cast<std::chrono::seconds>(start.time_since_epoch())).count();
-    float endTime = (std::chrono::duration_cast<std::chrono::seconds>(end.time_since_epoch())).count();
+    float startTime = (std::chrono::duration_cast<std::chrono::microseconds>(start.time_since_epoch())).count();
+    float endTime = (std::chrono::duration_cast<std::chrono::microseconds>(end.time_since_epoch())).count();
     float timeElapsed = endTime - startTime;
     int KB_sent = 0;
     int messages_sent = 0;
 
     char message[81920] = {'\0'};
-    while (timeElapsed < time){
+    while ((timeElapsed / MICROSECONDS_IN_SECOND) < time){
         if (send(sockfd, message, sizeof(message), 0) == -1) {
             perror("send");
             exit(1);
@@ -93,9 +95,9 @@ void runClient(std::string hostName, int PORT, float time) {
             exit(1);
         }
         end = std::chrono::high_resolution_clock::now();
-        endTime = (std::chrono::duration_cast<std::chrono::seconds>(end.time_since_epoch())).count();
+        endTime = (std::chrono::duration_cast<std::chrono::microseconds>(end.time_since_epoch())).count();
         timeElapsed = endTime - startTime;
-        spdlog::info("Time Elapsed: {:.3f} seconds", timeElapsed);
+        spdlog::info("Time Elapsed: {:.3f} seconds", (timeElapsed / MICROSECONDS_IN_SECOND));
     }
 
     auto total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
