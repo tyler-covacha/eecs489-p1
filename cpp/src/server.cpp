@@ -143,7 +143,6 @@ void runServer(int PORT) {
          spdlog::info("Received={} KB, Rate={:.3f} Mbps, Average RTT:{} ms\n", KB_received, bandwidth, average_rtt);
 
         close(connectionfd);
+        close(sockfd);
     }
-
-    close(sockfd);
 }
