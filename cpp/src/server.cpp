@@ -115,15 +115,13 @@ void runServer(int PORT) {
             while (total_received < expected)
             {   
                 ret = recv(connectionfd, buf + total_received, expected-total_received, 0);
-                if (ret < 0) {
+                if (ret == -1) {
                     perror("recv");
                     close(connectionfd);
                     break;
                 }
+                if (ret == 0) break; // Connection closed by client
                 total_received += ret;
-            }
-            if (ret == 0) { // Connection closed by client
-                break;
             }
 
             KB_received += ret / 1024;
