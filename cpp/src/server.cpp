@@ -54,8 +54,8 @@ void runServer(int PORT) {
         spdlog::info("Client connected");
 
         // Print what IP address connection is from
-        char s[INET6_ADDRSTRLEN];
-        printf("connetion from %s\n", inet_ntoa(connection.sin_addr));
+        // char s[INET6_ADDRSTRLEN];
+        // printf("connetion from %s\n", inet_ntoa(connection.sin_addr));
         
         // Variable setup
         std::chrono::high_resolution_clock::time_point start, end;
@@ -140,7 +140,7 @@ void runServer(int PORT) {
         int Mb_received = KB_received / 125; 
         float bandwidth = (Mb_received) / transmission_delay;
 
-         spdlog::info("Received={} KB, Rate={:.3f} Mbps, Average RTT:{} ms\n", KB_received, bandwidth, average_rtt);
+         spdlog::info("Received={} KB, Rate={:.3f} Mbps, Average RTT:{} ms", KB_received, bandwidth, average_rtt);
 
         close(connectionfd);
         close(sockfd);

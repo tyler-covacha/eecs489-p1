@@ -113,7 +113,7 @@ void runClient(std::string hostName, int PORT, float time) {
     int Mb_sent = KB_sent / 125;
     float bandwidth = Mb_sent / transmission_delay;
 
-    spdlog::info("Sent={} KB, Rate={:.3f} Mbps, Average RTT:{} ms\n", KB_sent, bandwidth, average_rtt);
+    spdlog::info("Sent={} KB, Rate={:.3f} Mbps, Average RTT:{} ms", KB_sent, bandwidth, average_rtt);
 
 
 
