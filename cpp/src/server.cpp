@@ -109,22 +109,17 @@ void runServer(int PORT) {
         int messages_sent = 0;
         const int expected = 81920;
         bool connection_closed = false;
-        while (!connection_closed) {
+        while (true) {
             int total_received = 0;
             char buf[expected];
             int ret {};
-            while (total_received < expected)
-            {   
-                ret = recv(connectionfd, buf + total_received, expected-total_received, 0);
-                if (ret == -1) {
-                    perror("recv");
-                    close(connectionfd);
-                    break;
-                }
-                if (ret == 0) connection_closed = true; // Connection closed by client
-                total_received += ret;
+            if ((ret = recv(connectionfd, buf, expected, MSG_WAITALL)) == -1) {
+                perror("recv");
+                close(connectionfd);
+            };
+            if (ret == 0) {
+                break;
             }
-            if (ret == 0) connection_closed = true; // Connection closed by client
 
             KB_received += ret / 1024;
             buf[ret] = '\0';
