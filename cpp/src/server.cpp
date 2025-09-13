@@ -136,9 +136,9 @@ void runServer(int PORT) {
         //Bandwidth calculation
         end = std::chrono::high_resolution_clock::now();
         auto total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-        float transmission_delay = (total_time.count() - (average_rtt * messages_sent)) / 1000.0;
-        int Kb_received = KB_received * 8;
-        float bandwidth = Kb_received / transmission_delay;
+        float transmission_delay = (total_time.count() - (average_rtt * messages_sent));
+        int Mb_received = KB_received / 125; 
+        float bandwidth = (Mb_received) / transmission_delay;
 
          spdlog::info("Received={} KB, Rate={:.3f} Mbps, Average RTT:{} ms\n", KB_received, bandwidth, average_rtt);
 
