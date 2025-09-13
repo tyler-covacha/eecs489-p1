@@ -51,7 +51,7 @@ void runClient(std::string hostName, int PORT, float time) {
             exit(1);
         }
 
-        char buf[1024];
+        char buf[1];
         int ret {};
         if ((ret = recv(sockfd, buf, sizeof(buf), 0)) == -1) {
             perror("recv");
@@ -79,15 +79,23 @@ void runClient(std::string hostName, int PORT, float time) {
     float timeElapsed = endTime - startTime;
     int KB_sent = 0;
     int messages_sent = 0;
+    const int to_send = 81920; // 80 KB
+    int msg_send = 0;
 
-    char message[81920] = {'\0'};
+    char message[to_send] = {'\0'};
     while ((timeElapsed / MICROSECONDS_IN_SECOND) < time){
-        if (send(sockfd, message, sizeof(message), 0) == -1) {
-            perror("send");
-            exit(1);
+        int total_sent = 0;
+        while (total_sent < to_send){
+            msg_send = send(sockfd, message + total_sent, to_send-total_sent, 0);
+            if (msg_send <= -1) {
+                perror("send");
+                exit(1);
+            }
+            total_sent += msg_send;
         }
-        KB_sent += 80; // 80 KB
-        char buf[1024];
+
+        KB_sent += msg_send / 1024; // 80 KB
+        char buf[1];
         messages_sent++;
         int ret {};
         if ((ret = recv(sockfd, buf, sizeof(buf), 0)) == -1) {

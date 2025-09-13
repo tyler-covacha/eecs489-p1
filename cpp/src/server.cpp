@@ -65,7 +65,7 @@ void runServer(int PORT) {
         /* Eight 'M' and 'A' messages */
         for (int i = 0; i < 8; i++) {
             // Receive message
-            char buf[1024];
+            char buf[1];
             int ret {};
             if ((ret = recv(connectionfd, buf, sizeof(buf), 0)) == -1) {
                 perror("recv");
@@ -107,17 +107,25 @@ void runServer(int PORT) {
         int KB_received = 0;
         int counter = 0;
         int messages_sent = 0;
+        const int expected = 81920;
         while (true) {
-            char buf[81920];
+            int total_received = 0;
+            char buf[expected];
             int ret {};
-            if ((ret = recv(connectionfd, buf, sizeof(buf), 0)) == -1) {
-                perror("recv");
-                close(connectionfd);
-                break;
+            while (total_received < expected)
+            {   
+                ret = recv(connectionfd, buf + total_received, expected-total_received, 0);
+                if (ret < 0) {
+                    perror("recv");
+                    close(connectionfd);
+                    break;
+                }
+                total_received += ret;
             }
             if (ret == 0) { // Connection closed by client
                 break;
             }
+
             KB_received += ret / 1024;
             buf[ret] = '\0';
 
