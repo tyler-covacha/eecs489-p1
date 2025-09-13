@@ -108,7 +108,8 @@ void runServer(int PORT) {
         int counter = 0;
         int messages_sent = 0;
         const int expected = 81920;
-        while (true) {
+        bool connection_closed = false;
+        while (!connection_closed) {
             int total_received = 0;
             char buf[expected];
             int ret {};
@@ -120,9 +121,10 @@ void runServer(int PORT) {
                     close(connectionfd);
                     break;
                 }
-                if (ret == 0) break; // Connection closed by client
+                if (ret == 0) connection_closed = true; // Connection closed by client
                 total_received += ret;
             }
+            if (ret == 0) connection_closed = true; // Connection closed by client
 
             KB_received += ret / 1024;
             buf[ret] = '\0';
