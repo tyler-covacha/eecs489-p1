@@ -46,7 +46,7 @@ void runServer(int PORT) {
 
 
 
-    while (true) {
+    //while (true) {
         // Accept new connection
         struct sockaddr_in connection;
         socklen_t size = sizeof(connection);
@@ -144,5 +144,5 @@ void runServer(int PORT) {
 
         close(connectionfd);
         close(sockfd);
-    }
+    //}
 }
