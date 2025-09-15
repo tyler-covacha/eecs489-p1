@@ -15,14 +15,14 @@ void runServer(int PORT) {
     // Make a socket
     int sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sockfd == -1)  {
-        perror("error making socket");
+        // perror("error making socket");
         exit(1);
     }
 
     // Option for allowing you to reuse socket
     int yes {1};
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
-        perror("error setsockopt");
+        // perror("error setsockopt");
         exit(1);
     }
 
@@ -32,13 +32,13 @@ void runServer(int PORT) {
     addr.sin_addr.s_addr = INADDR_ANY;
     addr.sin_port = htons(PORT);
     if (bind(sockfd, (sockaddr*)&addr, (socklen_t) sizeof(addr)) == -1) {
-        perror("error binding socket");
+        // perror("error binding socket");
         exit(1);
     }
 
     // Listen for incoming connections
     if (listen(sockfd, 10) == -1) {
-        perror("error listening");
+        // perror("error listening");
         exit(1);
     }
 
@@ -68,7 +68,7 @@ void runServer(int PORT) {
             char buf[1];
             int ret {};
             if ((ret = recv(connectionfd, buf, sizeof(buf), 0)) == -1) {
-                perror("recv");
+                // perror("recv");
                 close(connectionfd);
                 continue;
             }
@@ -93,7 +93,7 @@ void runServer(int PORT) {
             //Send ACK message back to client
             char ack[] = "A";
             if (send(connectionfd, ack, 1, 0) == -1) {
-                perror("send");
+                // perror("send");
                 close(connectionfd);
                 continue;
             }
@@ -114,7 +114,7 @@ void runServer(int PORT) {
             char buf[expected];
             int ret {};
             if ((ret = recv(connectionfd, buf, expected, MSG_WAITALL)) == -1) {
-                perror("recv");
+                // perror("recv");
                 close(connectionfd);
             };
             if (ret == 0) {
@@ -127,7 +127,7 @@ void runServer(int PORT) {
             // Send ACK message back to client
             char ack[] = "A";
             if (send(connectionfd, ack, 1, 0) == -1) {
-                perror("send");
+                // perror("send");
                 close(connectionfd);
                 break;
             }
@@ -138,9 +138,9 @@ void runServer(int PORT) {
         auto total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
         float transmission_delay = (total_time.count() - (average_rtt * messages_sent));
         int Mb_received = KB_received / 125; 
-        float bandwidth = (Mb_received) / transmission_delay;
+        float bandwidth = (Mb_received) / (transmission_delay / 1000); //Mbpms CHANGE to Mbps
 
-         spdlog::info("Received={} KB, Rate={:.3f} Mbps, Average RTT:{} ms", KB_received, bandwidth, average_rtt);
+         spdlog::info("Received={} KB, Rate={:.3f} Mbps, RTT:{}ms\n", KB_received, bandwidth, average_rtt);
 
         close(connectionfd);
         close(sockfd);

@@ -18,7 +18,7 @@ void runClient(std::string hostName, int PORT, float time) {
     // Make a socket
     int sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sockfd == -1)  {
-        perror("error making socket");
+        // perror("error making socket");
         exit(1);
     }
 
@@ -26,7 +26,7 @@ void runClient(std::string hostName, int PORT, float time) {
     addr.sin_family = AF_INET;
     struct hostent *host = gethostbyname(hostName.c_str()); //"127.0.0.1"
     if (host == NULL) {
-        perror("error gethostbyname");
+        // perror("error gethostbyname");
         exit(1);
     }
     memcpy(&addr.sin_addr, host->h_addr, host->h_length);
@@ -34,7 +34,7 @@ void runClient(std::string hostName, int PORT, float time) {
 
     // Connect to the server
     if (connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)) == -1) {
-        perror("error connecting");
+        // perror("error connecting");
         exit(1);
     }
 
@@ -47,14 +47,14 @@ void runClient(std::string hostName, int PORT, float time) {
         char message[] = "M";
         start = std::chrono::high_resolution_clock::now();
         if (send(sockfd, message, 1, 0) == -1) {
-            perror("send");
+            // perror("send");
             exit(1);
         }
 
         char buf[1];
         int ret {};
         if ((ret = recv(sockfd, buf, sizeof(buf), 0)) == -1) {
-            perror("recv");
+            // perror("recv");
             exit(1);
         }
         end = std::chrono::high_resolution_clock::now();
@@ -88,7 +88,7 @@ void runClient(std::string hostName, int PORT, float time) {
         while (total_sent < to_send){
             msg_send = send(sockfd, message + total_sent, to_send-total_sent, 0);
             if (msg_send <= -1) {
-                perror("send");
+                // perror("send");
                 exit(1);
             }
             total_sent += msg_send;
@@ -99,7 +99,7 @@ void runClient(std::string hostName, int PORT, float time) {
         messages_sent++;
         int ret {};
         if ((ret = recv(sockfd, buf, sizeof(buf), 0)) == -1) {
-            perror("recv");
+            // perror("recv");
             exit(1);
         }
         end = std::chrono::high_resolution_clock::now();
@@ -111,9 +111,9 @@ void runClient(std::string hostName, int PORT, float time) {
     auto total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     float transmission_delay = (total_time.count() - (average_rtt * messages_sent));
     int Mb_sent = KB_sent / 125;
-    float bandwidth = Mb_sent / transmission_delay;
+    float bandwidth = Mb_sent / (transmission_delay / 1000); // Mbpms CHANGE
 
-    spdlog::info("Sent={} KB, Rate={:.3f} Mbps, Average RTT:{} ms", KB_sent, bandwidth, average_rtt);
+    spdlog::info("Sent={} KB, Rate={:.3f} Mbps, RTT:{}ms\n", KB_sent, bandwidth, average_rtt);
 
 
 

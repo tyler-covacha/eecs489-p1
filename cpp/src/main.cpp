@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
         is_client = result["client"].as<bool>();
     }
     else {
-        spdlog::error("Error: you must specify either only one server (-s) or client (-c) mode");
+        // spdlog::error("Error: you must specify either only one server (-s) or client (-c) mode");
         exit(1);
     }
 
@@ -46,13 +46,13 @@ int main(int argc, char* argv[]) {
         port = result["port"].as<int>();
     }
     else if (result.count("port") != 1) {
-        spdlog::error("Error: you must specify a port number with -p");
+        // spdlog::error("Error: you must specify a port number with -p");
         exit(1);
     }
     spdlog::debug("About to check port number...");
     if (port < 1024 || port > 0xFFFF) {
-      spdlog::error("Port number is: {}", port);
-      spdlog::error("Error: port number must be in the range of [1024, 65535]"); 
+    //   spdlog::error("Port number is: {}", port);
+      spdlog::error("Error: port number must be in the range of [1024, 65535]\n"); 
       exit(1); 
     }
 
@@ -62,14 +62,14 @@ int main(int argc, char* argv[]) {
             host = result["host"].as<std::string>();
         }
         else if (result.count("host") != 1) {
-            spdlog::error("You must specify a hostname or IP address with -h when in client mode or too many hosts");
+            // spdlog::error("You must specify a hostname or IP address with -h when in client mode or too many hosts");
             exit(1);
         }
 
         if (result.count("time") == 1) {
             time = result["time"].as<float>();
             if (time <= 0) {
-                spdlog::error("Error: time argument must be greater than 0");
+                spdlog::error("Error: time argument must be greater than 0\n");
                 exit(1);
             }
         }
