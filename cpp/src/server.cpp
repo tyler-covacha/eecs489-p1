@@ -140,7 +140,7 @@ void runServer(int PORT) {
         int Mb_received = KB_received / 125; 
         float bandwidth = (Mb_received) / (transmission_delay / 1000); //Mbpms CHANGE to Mbps
 
-         spdlog::info("Received={} KB, Rate={:.3f} Mbps, RTT:{}ms\n", KB_received, bandwidth, average_rtt);
+         spdlog::info("Received={} KB, Rate={:.3f} Mbps, RTT={}ms\n", KB_received, bandwidth, average_rtt);
 
         close(connectionfd);
         close(sockfd);
