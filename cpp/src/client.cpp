@@ -110,8 +110,8 @@ void runClient(std::string hostName, int PORT, float time) {
 
     auto total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     float transmission_delay = (total_time.count() - (average_rtt * messages_sent));
-    int Mb_sent = KB_sent / 125;
-    float bandwidth = Mb_sent / (transmission_delay / 1000); // Mbpms CHANGE
+    double Mb_sent = KB_sent / 125;
+    double bandwidth = Mb_sent / (transmission_delay / 1000); // Mbpms CHANGE
 
     spdlog::info("Sent={} KB, Rate={:.3f} Mbps, RTT={}ms\n", KB_sent, bandwidth, average_rtt);
 
